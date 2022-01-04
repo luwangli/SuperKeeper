@@ -1,5 +1,5 @@
 # SuperKeeper
-## Intro
+## Introduction
 Existing approaches for super spread detection cannot achieve the requirement of accuracy, especially in small memory.
 Meanwhile, they cann't provide the estimation of cardinality precisely which is important in practice.
 
@@ -16,12 +16,11 @@ We compare it with three state-of-the-art algorithms, GMF, SpreadSketch to show 
 - SKAC/. the implementation of SuperKeeper with Adaptive Counter estimator
 - SKLC/. the implementation of SuperKeeper with Linear Counter estimator
 - Estimator/. the implementation of two estiamtor
-## data
-we provide a test case.
+## Data
+we provide a test case in data folder.
 This dataset is collected from a [real-world e-commerce website ](https://www.kaggle.com/retailrocket/ecommerce-dataset?select=events.csv) and we use the visitor 
 behavior data. We take item ID as flow label and visitor ID as 
 element identifier.
-from recommender system dataset.
 
 
 ## Requirement
