@@ -1,19 +1,14 @@
 #include "../common/param.h"
 #include "../common/Read.h"
-//#include "../Estimator/ACEst.h"
 #include "../Estimator/ACEstBit.h"
 #include "../Estimator/LCEstBit.h"
-//#include "../Estimator/LCEst.h"
-
-//#include "../Sketch/SktAC.h"
 #include "../GMF/SktLC.h"
 #include "../SpreadSketch/spreadsketch.h"
 #include "../cSkt/CSktAC.h"
-#include "../SKAC/superkeepAC.h"
+//#include "../SKAC/superkeepAC.h"
 #include "../SKAC/SKPowerAC.h"
 #include "../SKLC/SKPowerLC.h"
-#include "../SKLC/superkeepLC.h"
-//#include "../common/Murmurhash2.h"
+//#include "../SKLC/superkeepLC.h"
 using namespace std;
 
 int main(){
@@ -22,24 +17,14 @@ int main(){
 
     int pkt_num, flow_num;
 
-    //char filename[100] = "../data/datatrace.txt";
-    //char resname[100] = "../data/dstspread.txt";
-
-    char filename[100];
-    cout<<"Input detect file (for example: ../data/datatrace.txt) "<<endl;
-    cin >> filename;
-
-    char resname[100];
-    cout<<"Input detect file (for example: ../data/dstpread.txt) "<<endl;
-    cin >> resname;
-//    char filename[100] = "../data/kaggleData.txt";
- //   char resname[100] = "../data/kaggleItemSpread.txt";
+    char filename[100] = "../data/kaggleData.txt";
+    char resname[100] = "../data/kaggleItemSpread.txt";
     pkt_num = Read(filename,Stream);
     flow_num = ReadRes(resname, Bench);
     cout<<"***************************"<<endl;
     timespec start_time, end_time;
     long long timediff=0,det_time=0;
-    double insert_throughput=0,query_throughput=0;
+    double insert_throughput=0;
     /*************param settting**********/
     int memory = 40;//KB
     int Th = 50;
@@ -47,7 +32,7 @@ int main(){
     int depth = 1;
     float alpha =2;
     float beta =1;
-    cout<<"Input memory, Threshold and depth, (for example: 40 50 1)"<<endl;
+    cout<<"Input memory, Threshold and depth, (for example: 100 250 1)"<<endl;
     cin >> memory >> Th >> depth;
     /*************result parameter***********/
     double precision=0,recall=0,ab_error=0,re_error=0,f1=0;
@@ -55,9 +40,7 @@ int main(){
     int tp=0,cnt=0;
     ofstream outFile;
 
-
     // *****************************superkeep_power test ************
-    // ******************************superkeep test******************
     cout<<"**************SKPowerAC *******************"<<endl;
     int skp_size = 4;
     int skp_bkt_num = 40;
@@ -109,7 +92,7 @@ int main(){
     avg_ab_error = ab_error/tp;
     avg_re_error = re_error / tp;
 
-    cout<<"Memory \t precision \t recall \t f1 \t insert_th \t dec_time(ms) \t avg_ab_arror \t avg_re_error"<<endl;
+    cout<<"Memory \t precision \t recall \t f1 \t insert_th \t dec_time(us) \t avg_ab_arror \t avg_re_error"<<endl;
     cout<<skp_mem/(8*1024)<<"\t"<<precision<<"\t"<<recall<<"\t"<<f1<<"\t"<<insert_throughput<<"\t"<<det_time<<"\t"<<avg_ab_error<<"\t"<<avg_re_error<<endl;
 
     outFile.open("result.csv",ios::app);
@@ -172,74 +155,13 @@ int main(){
     avg_ab_error = ab_error/tp;
     avg_re_error = re_error / tp;
 
-    cout<<"Memory \t precision \t recall \t f1 \t insert_th \t dec_time(ms) \t avg_ab_arror \t avg_re_error"<<endl;
+    cout<<"Memory \t precision \t recall \t f1 \t insert_th \t dec_time(us) \t avg_ab_arror \t avg_re_error"<<endl;
     cout<<skplc_mem/(8*1024)<<"\t"<<precision<<"\t"<<recall<<"\t"<<f1<<"\t"<<insert_throughput<<"\t"<<det_time<<"\t"<<avg_ab_error<<"\t"<<avg_re_error<<endl;
   //  ofstream outFile;
     outFile.open("result.csv",ios::app);
     outFile <<filename<<",skplc,"<<skplc_mem/(8*1024)<<","<<depth<<","<<Th<<","<<precision<<","<<recall<<","<<f1<<","
             <<insert_throughput<<","<<det_time<<","<<avg_ab_error<<","<<avg_re_error<<endl;
     outFile.close();
-
-
-    // ******************************superkeep test******************
-    cout<<"**************superkeep lc *******************"<<endl;
-    int sk_col_num = depth;
-    int sk_mem = memory*1024*8;
-    int sklc_arraysize = arraysize;
-   // auto tskt = TSktAC(tskt_mem,bkt_num,size,col_num);
-    //auto sk = SuperKeepLC(sk_mem, sk_bkt_num, sk_size, sk_col_num);
-    auto sk = SuperKeepLC(sk_mem, sklc_arraysize, sk_col_num);
-    //insert
-    clock_gettime(CLOCK_MONOTONIC, &start_time);
-    for(int i=0;i<pkt_num;i++){
-        sk.Insert(Stream[i].second,Stream[i].first);
-    }
-    clock_gettime(CLOCK_MONOTONIC, &end_time);
-    timediff = (long long)(end_time.tv_sec - start_time.tv_sec) * 1000000000LL + (end_time.tv_nsec - start_time.tv_nsec);
-    insert_throughput = (double)1000.0*pkt_num / timediff;
-
-    vector<pair<uint32_t,uint32_t>> SKRes;
-
-    clock_gettime(CLOCK_MONOTONIC, &start_time);
-    sk.QueryThresh(Th, SKRes);
-    clock_gettime(CLOCK_MONOTONIC, &end_time);
-    det_time = (long long)(end_time.tv_sec - start_time.tv_sec) * 1000000000LL + (end_time.tv_nsec - start_time.tv_nsec);
-    det_time = det_time/1000;
-    // Calculate accuracy
-    precision=0;recall=0;ab_error=0;re_error=0;f1=0;
-    avg_ab_error=0; avg_re_error=0;
-    tp=0;cnt=0;
-   // int ab_error=0, re_error=0;
-    for(auto it:Bench){
-        if(int(it.second) >= Th){
-            cnt++;
-            for(auto ik:SKRes){
-                if(ik.first == it.first){
-                   // cout<<it.first<<"\t real value:"<<it.second<<"\t ss value:"<<ik.second<<endl;
-                    ab_error += abs((int)it.second - (int)ik.second);
-                   // cout<<"absolute error: "<<ab_error<<endl<<endl;
-                    re_error += abs((int)it.second - (int)ik.second) * 1.0 / it.second;
-                    tp++;
-                }
-            }
-        }
-    }
-
-    cout<<" total superspread: "<<cnt<<"\t est superspread:"<<SKRes.size()<< "\t detect superspread: "<<tp<<endl;
-    precision = tp * 1.0 / SKRes.size();
-    recall = tp*1.0/cnt;
-    f1 = 2*precision*recall/(precision+recall);
-    avg_ab_error = ab_error/tp;
-    avg_re_error = re_error / tp;
-
-    cout<<"Memory \t precision \t recall \t f1 \t insert_th \t dec_time(ms) \t avg_ab_arror \t avg_re_error"<<endl;
-    cout<<sk_mem/(8*1024)<<"\t"<<precision<<"\t"<<recall<<"\t"<<f1<<"\t"<<insert_throughput<<"\t"<<det_time<<"\t"<<avg_ab_error<<"\t"<<avg_re_error<<endl;
-  //  ofstream outFile;
-    outFile.open("result.csv",ios::app);
-    outFile <<filename<<",superkeep,"<<sk_mem/(8*1024)<<","<<depth<<","<<Th<<","<<precision<<","<<recall<<","<<f1<<","
-            <<insert_throughput<<","<<det_time<<","<<avg_ab_error<<","<<avg_re_error<<endl;
-    outFile.close();
-
 
 
     // *********************************cSkt test*********************
@@ -293,7 +215,7 @@ int main(){
     avg_ab_error = ab_error/tp;
     avg_re_error = re_error / tp;
 
-    cout<<"Memory \t precision \t recall \t f1 \t insert_th \t dec_time(ms) \t avg_ab_arror \t avg_re_error"<<endl;
+    cout<<"Memory \t precision \t recall \t f1 \t insert_th \t dec_time(us) \t avg_ab_arror \t avg_re_error"<<endl;
     cout<<cskt_mem/(8*1024)<<"\t"<<precision<<"\t"<<recall<<"\t"<<f1<<"\t"<<insert_throughput<<"\t"<<det_time<<"\t"<<avg_ab_error<<"\t"<<avg_re_error<<endl;
    // ofstream outFile;
     outFile.open("result.csv",ios::app);
@@ -363,7 +285,7 @@ int main(){
     avg_ab_error = ab_error/tp;
     avg_re_error = re_error / tp;
 
-    cout<<"Memory \t precision \t recall \t f1 \t insert_th \t dec_time(ms) \t avg_ab_arror \t avg_re_error"<<endl;
+    cout<<"Memory \t precision \t recall \t f1 \t insert_th \t dec_time(us) \t avg_ab_arror \t avg_re_error"<<endl;
     cout<<total_mem<<"\t"<<precision<<"\t"<<recall<<"\t"<<f1<<"\t"<<insert_throughput<<"\t"<<det_time<<"\t"<<avg_ab_error<<"\t"<<avg_re_error<<endl;
 
     //ofstream outFile;
@@ -443,7 +365,7 @@ int main(){
     avg_ab_error = ab_error/tp;
     avg_re_error = re_error / tp;
    // cout<<"**************GMF*******************"<<endl;
-    cout<<"Memory \t precision \t recall \t f1 \t insert_th \t dec_time(ms) \t avg_ab_arror \t avg_re_error"<<endl;
+    cout<<"Memory \t precision \t recall \t f1 \t insert_th \t dec_time(us) \t avg_ab_arror \t avg_re_error"<<endl;
     cout<<gmf_mem<<"\t"<<precision<<"\t"<<recall<<"\t"<<f1<<"\t"<<insert_throughput<<"\t"<<det_time<<"\t"<<avg_ab_error<<"\t"<<avg_re_error<<endl;
 
     outFile.open("result.csv",ios::app);

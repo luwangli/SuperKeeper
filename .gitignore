@@ -33,5 +33,5 @@
 
 # self-define
 *.txt
-data/*
+
 core
