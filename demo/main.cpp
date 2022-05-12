@@ -275,11 +275,10 @@ int main(){
     // ***************************************GMF test****************************
     // GMF setting
      cout<<"**************GMF*******************"<<endl;
-
+    //gmf uses SktLC to process all flows; if the estimated cardinality over threshold, then this flow would be stored in GMFRes
     int gmf_arragysize=arraysize;
     int gmf_depth = depth;
     int gmf_mem = memory;
-//    auto tB = SktAC(gmf_mem*1024*8,bkt_num,size,col_num);
     auto tB = SktLC(gmf_mem*1024*8,gmf_arragysize,gmf_depth);
     // ***** GMF data insert
     vector<pair<uint32_t,uint32_t>> GMFRes;
