@@ -26,14 +26,14 @@ int main(){
     long long timediff=0,det_time=0;
     double insert_throughput=0;
     /*************param settting**********/
-    int memory = 40;//KB
-    int Th = 50;
+    int memory = 100;//KB
+    int Th = 500;
     int arraysize = 200;
-    int depth = 1;
+    int depth = 2;
     float alpha =2;
     float beta =1;
-    cout<<"Input memory, Threshold and depth, (for example: 100 250 1)"<<endl;
-    cin >> memory >> Th >> depth;
+  //  cout<<"Input memory, Threshold and depth, (for example: 100 250 1)"<<endl;
+  //  cin >> memory >> Th >> depth;
     /*************result parameter***********/
     double precision=0,recall=0,ab_error=0,re_error=0,f1=0;
     double avg_ab_error=0, avg_re_error=0;
@@ -41,7 +41,7 @@ int main(){
     ofstream outFile;
 
     // *****************************superkeep_power test ************
-    cout<<"**************SKPowerAC *******************"<<endl;
+    cout<<"**************SK-AC *******************"<<endl;
     int skp_size = 4;
     int skp_bkt_num = 40;
     int skp_col_num = depth;
@@ -92,15 +92,12 @@ int main(){
     avg_ab_error = ab_error/tp;
     avg_re_error = re_error / tp;
 
-    cout<<"Memory \t precision \t recall \t f1 \t insert_th \t dec_time(us) \t avg_ab_arror \t avg_re_error"<<endl;
-    cout<<skp_mem/(8*1024)<<"\t"<<precision<<"\t"<<recall<<"\t"<<f1<<"\t"<<insert_throughput<<"\t"<<det_time<<"\t"<<avg_ab_error<<"\t"<<avg_re_error<<endl;
+    cout<<"Memory \t precision  \t insert_th \t dec_time(us) \t avg_ab_arror \t avg_re_error"<<endl;
+    cout<<skp_mem/(8*1024)<<"\t"<<precision<<"\t"<<insert_throughput<<"\t"<<det_time<<"\t"<<avg_ab_error<<"\t"<<avg_re_error<<endl;
 
-    outFile.open("result.csv",ios::app);
-    outFile <<filename<<",skpAC,"<<skp_mem/(8*1024)<<","<<depth<<","<<Th<<","<<precision<<","<<recall<<","<<f1<<","
-            <<insert_throughput<<","<<det_time<<","<<avg_ab_error<<","<<avg_re_error<<endl;
-    outFile.close();
 
-    cout<<"**************SKPowerLC *******************"<<endl;
+
+    cout<<"**************SK-LC *******************"<<endl;
 
     int skplc_arraysize = arraysize;
     int skplc_colnum = depth;
@@ -155,17 +152,10 @@ int main(){
     avg_ab_error = ab_error/tp;
     avg_re_error = re_error / tp;
 
-    cout<<"Memory \t precision \t recall \t f1 \t insert_th \t dec_time(us) \t avg_ab_arror \t avg_re_error"<<endl;
-    cout<<skplc_mem/(8*1024)<<"\t"<<precision<<"\t"<<recall<<"\t"<<f1<<"\t"<<insert_throughput<<"\t"<<det_time<<"\t"<<avg_ab_error<<"\t"<<avg_re_error<<endl;
-  //  ofstream outFile;
-    outFile.open("result.csv",ios::app);
-    outFile <<filename<<",skplc,"<<skplc_mem/(8*1024)<<","<<depth<<","<<Th<<","<<precision<<","<<recall<<","<<f1<<","
-            <<insert_throughput<<","<<det_time<<","<<avg_ab_error<<","<<avg_re_error<<endl;
-    outFile.close();
-
+    cout<<"Memory \t precision  \t insert_th \t dec_time(us) \t avg_ab_arror \t avg_re_error"<<endl;
+    cout<<skplc_mem/(8*1024)<<"\t"<<precision<<"\t"<<insert_throughput<<"\t"<<det_time<<"\t"<<avg_ab_error<<"\t"<<avg_re_error<<endl;
 
     // *********************************cSkt test*********************
-    // count min method
     cout<<"**************cSkt*******************"<<endl;
     int size = 4;
     int bkt_num = 40;
@@ -215,15 +205,8 @@ int main(){
     avg_ab_error = ab_error/tp;
     avg_re_error = re_error / tp;
 
-    cout<<"Memory \t precision \t recall \t f1 \t insert_th \t dec_time(us) \t avg_ab_arror \t avg_re_error"<<endl;
-    cout<<cskt_mem/(8*1024)<<"\t"<<precision<<"\t"<<recall<<"\t"<<f1<<"\t"<<insert_throughput<<"\t"<<det_time<<"\t"<<avg_ab_error<<"\t"<<avg_re_error<<endl;
-   // ofstream outFile;
-    outFile.open("result.csv",ios::app);
-    outFile <<filename<<",cskt,"<<cskt_mem/(8*1024)<<","<<depth<<","<<Th<<","<<precision<<","<<recall<<","<<f1<<","
-            <<insert_throughput<<","<<det_time<<","<<avg_ab_error<<","<<avg_re_error<<endl;
-    outFile.close();
-
-
+    cout<<"Memory \t precision  \t insert_th \t dec_time(us) \t avg_ab_arror \t avg_re_error"<<endl;
+    cout<<cskt_mem/(8*1024)<<"\t"<<precision<<"\t"<<insert_throughput<<"\t"<<det_time<<"\t"<<avg_ab_error<<"\t"<<avg_re_error<<endl;
 
     // *******************************SpreadSketch teset************************
     // Spread Sketch setting
@@ -285,19 +268,12 @@ int main(){
     avg_ab_error = ab_error/tp;
     avg_re_error = re_error / tp;
 
-    cout<<"Memory \t precision \t recall \t f1 \t insert_th \t dec_time(us) \t avg_ab_arror \t avg_re_error"<<endl;
-    cout<<total_mem<<"\t"<<precision<<"\t"<<recall<<"\t"<<f1<<"\t"<<insert_throughput<<"\t"<<det_time<<"\t"<<avg_ab_error<<"\t"<<avg_re_error<<endl;
-
-    //ofstream outFile;
-    outFile.open("result.csv",ios::app);
-    outFile <<filename<<",SpreadSketch,"<<memory<<","<<depth<<","<<Th<<","<<precision<<","<<recall<<","<<f1<<","
-            <<insert_throughput<<","<<det_time<<","<<avg_ab_error<<","<<avg_re_error<<endl;
-    outFile.close();
+    cout<<"Memory \t precision  \t insert_th \t dec_time(us) \t avg_ab_arror \t avg_re_error"<<endl;
+    cout<<total_mem<<"\t"<<precision<<"\t"<<insert_throughput<<"\t"<<det_time<<"\t"<<avg_ab_error<<"\t"<<avg_re_error<<endl;
 
 
     // ***************************************GMF test****************************
     // GMF setting
-
      cout<<"**************GMF*******************"<<endl;
 
     int gmf_arragysize=arraysize;
@@ -365,13 +341,9 @@ int main(){
     avg_ab_error = ab_error/tp;
     avg_re_error = re_error / tp;
    // cout<<"**************GMF*******************"<<endl;
-    cout<<"Memory \t precision \t recall \t f1 \t insert_th \t dec_time(us) \t avg_ab_arror \t avg_re_error"<<endl;
-    cout<<gmf_mem<<"\t"<<precision<<"\t"<<recall<<"\t"<<f1<<"\t"<<insert_throughput<<"\t"<<det_time<<"\t"<<avg_ab_error<<"\t"<<avg_re_error<<endl;
+    cout<<"Memory \t precision \t insert_th \t dec_time(us) \t avg_ab_arror \t avg_re_error"<<endl;
+    cout<<gmf_mem<<"\t"<<precision<<"\t"<<insert_throughput<<"\t"<<det_time<<"\t"<<avg_ab_error<<"\t"<<avg_re_error<<endl;
 
-    outFile.open("result.csv",ios::app);
-    outFile <<filename<<",GMF,"<<gmf_mem<<","<<depth<<","<<Th<<","<<precision<<","<<recall<<","<<f1<<","
-            <<insert_throughput<<","<<det_time<<","<<avg_ab_error<<","<<avg_re_error<<endl;
-    outFile.close();
 
 
 }
